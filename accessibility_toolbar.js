@@ -45,6 +45,11 @@
         const style = document.createElement('style');
         style.id = 'unam-accessibility-styles';
         style.textContent = `
+            /* Aislamos la barra y el panel para que no cambien de tamaño con el zoom del texto */
+            #unam-accessibility-header, #accessibility-panel, #open-accessibility-btn {
+                font-size: 16px !important;
+            }
+
             /* Estilos y Reglas Globales de Accesibilidad */
             .theme-high-contrast, .theme-high-contrast * {
                 background-color: #000000 !important;
@@ -297,14 +302,21 @@
             if (panel) panel.classList.toggle('translate-x-full');
         }
 
-        function changeFontSize(factor) {
-            currentFontSize = Math.min(Math.max(currentFontSize * factor, 80), 160);
+        function applyFontSize(size) {
+            currentFontSize = size;
+            // Modificar tanto html como body garantiza compatibilidad con Tailwind CSS / rem / px
+            document.documentElement.style.fontSize = `${currentFontSize}%`;
             body.style.fontSize = `${currentFontSize}%`;
         }
 
+        function changeFontSize(step) {
+            let newSize = currentFontSize + (step * 10);
+            newSize = Math.min(Math.max(newSize, 80), 180); // Límite entre 80% y 180%
+            applyFontSize(newSize);
+        }
+
         function resetFontSize() {
-            currentFontSize = 100;
-            body.style.fontSize = '100%';
+            applyFontSize(100);
         }
 
         function updateBadge(id, state) {
@@ -418,10 +430,10 @@
         document.getElementById('btn-close-panel').onclick = togglePanel;
         document.getElementById('btn-open-panel-top').onclick = togglePanel;
 
-        document.getElementById('btn-font-plus').onclick = () => changeFontSize(1.1);
-        document.getElementById('panel-font-plus').onclick = () => changeFontSize(1.1);
-        document.getElementById('btn-font-minus').onclick = () => changeFontSize(0.9);
-        document.getElementById('panel-font-minus').onclick = () => changeFontSize(0.9);
+        document.getElementById('btn-font-plus').onclick = () => changeFontSize(1);
+        document.getElementById('panel-font-plus').onclick = () => changeFontSize(1);
+        document.getElementById('btn-font-minus').onclick = () => changeFontSize(-1);
+        document.getElementById('panel-font-minus').onclick = () => changeFontSize(-1);
         document.getElementById('btn-font-reset').onclick = resetFontSize;
         document.getElementById('panel-font-reset').onclick = resetFontSize;
 
