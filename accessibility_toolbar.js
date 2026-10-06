@@ -32,24 +32,22 @@
             od.href = 'https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic.css';
             head.appendChild(od);
         }
-
-        // Tailwind CSS CDN (si el sitio no lo incluye)
-        if (!window.tailwind && !document.querySelector('script[src*="tailwindcss"]')) {
-            const tw = document.createElement('script');
-            tw.src = 'https://cdn.tailwindcss.com';
-            head.appendChild(tw);
-        }
     }
 
     function injectStyles() {
         const style = document.createElement('style');
         style.id = 'unam-accessibility-styles';
         style.textContent = `
-            /* Aislamos los controles para que mantengan un tamaño de fuente fijo y no escalen con el zoom de lectura */
+            /* Aislamos los controles para que mantengan un tamaño de fuente fijo */
             #unam-accessibility-header, #accessibility-panel, #open-accessibility-btn {
-                font-size: 16px !important;
-                line-height: 1.5 !important;
+                font-size: 14px !important;
+                line-height: 1.4 !important;
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+                box-sizing: border-box !important;
+            }
+
+            #unam-accessibility-header *, #accessibility-panel *, #open-accessibility-btn * {
+                box-sizing: border-box !important;
             }
 
             /* Garantizar la posición fija permanente de la barra superior */
@@ -59,12 +57,239 @@
                 left: 0 !important;
                 right: 0 !important;
                 width: 100% !important;
+                height: 48px !important;
+                background-color: #0f172a !important;
+                color: #ffffff !important;
                 z-index: 999980 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                padding: 0 16px !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                border-bottom: 1px solid #1e293b !important;
             }
 
-            /* Empujar el contenido original hacia abajo para no solaparlo con la barra fija */
+            /* Empujar el contenido original hacia abajo */
             body.unam-accessibility-active {
-                padding-top: 50px !important;
+                padding-top: 48px !important;
+            }
+
+            .unam-hdr-title {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                font-weight: 700 !important;
+                color: #f1f5f9 !important;
+            }
+
+            .unam-hdr-controls {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+
+            /* Botones genéricos de la interfaz */
+            .unam-btn {
+                border: none !important;
+                outline: none !important;
+                cursor: pointer !important;
+                border-radius: 6px !important;
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 6px !important;
+                transition: all 0.2s ease !important;
+                background-color: #1e293b !important;
+                color: #e2e8f0 !important;
+            }
+            .unam-btn:hover {
+                background-color: #334155 !important;
+            }
+
+            .unam-btn-gold {
+                background-color: #f59e0b !important;
+                color: #020617 !important;
+                font-weight: 700 !important;
+            }
+            .unam-btn-gold:hover {
+                background-color: #d97706 !important;
+            }
+
+            .unam-btn-blue {
+                background-color: #1d4ed8 !important;
+                color: #ffffff !important;
+                font-weight: 700 !important;
+            }
+            .unam-btn-blue:hover {
+                background-color: #1e40af !important;
+            }
+
+            .unam-btn-group {
+                display: flex !important;
+                align-items: center !important;
+                background-color: #1e293b !important;
+                border: 1px solid #334155 !important;
+                border-radius: 6px !important;
+                padding: 2px !important;
+            }
+            .unam-btn-group button {
+                background: transparent !important;
+                border: none !important;
+                color: #cbd5e1 !important;
+                padding: 4px 8px !important;
+                cursor: pointer !important;
+                font-weight: 600 !important;
+                border-radius: 4px !important;
+            }
+            .unam-btn-group button:hover {
+                background-color: #334155 !important;
+                color: #ffffff !important;
+            }
+
+            /* Botón Flotante Inferior */
+            #open-accessibility-btn {
+                position: fixed !important;
+                bottom: 24px !important;
+                right: 24px !important;
+                z-index: 999990 !important;
+                background-color: #00468B !important;
+                color: #ffffff !important;
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 50% !important;
+                border: none !important;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+                cursor: pointer !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 24px !important;
+                transition: transform 0.2s ease, background-color 0.2s ease !important;
+            }
+            #open-accessibility-btn:hover {
+                transform: scale(1.1) !important;
+                background-color: #003569 !important;
+            }
+
+            /* Panel Lateral Deslizante */
+            #accessibility-panel {
+                position: fixed !important;
+                top: 0 !important;
+                right: 0 !important;
+                width: 360px !important;
+                max-width: 100vw !important;
+                height: 100vh !important;
+                background-color: #ffffff !important;
+                box-shadow: -5px 0 30px rgba(0,0,0,0.25) !important;
+                z-index: 999999 !important;
+                transform: translateX(100%) !important;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                overflow-y: auto !important;
+                color: #334155 !important;
+            }
+
+            #accessibility-panel.panel-open {
+                transform: translateX(0) !important;
+            }
+
+            .unam-panel-header {
+                background-color: #00468B !important;
+                color: #ffffff !important;
+                padding: 16px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 10 !important;
+            }
+
+            .unam-panel-body {
+                padding: 20px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 20px !important;
+            }
+
+            .unam-section-title {
+                font-size: 11px !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.05em !important;
+                color: #64748b !important;
+                font-weight: 700 !important;
+                margin-bottom: 10px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+
+            .unam-grid-3 {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .unam-grid-2 {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .unam-card-btn {
+                background-color: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 10px !important;
+                padding: 10px !important;
+                text-align: center !important;
+                cursor: pointer !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                color: #1e293b !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 4px !important;
+                transition: all 0.2s ease !important;
+            }
+            .unam-card-btn:hover {
+                background-color: #eff6ff !important;
+                border-color: #3b82f6 !important;
+                color: #1d4ed8 !important;
+            }
+
+            .unam-toggle-btn {
+                width: 100% !important;
+                background-color: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 10px !important;
+                padding: 10px 12px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                color: #1e293b !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                cursor: pointer !important;
+                transition: background-color 0.2s ease !important;
+                margin-bottom: 8px !important;
+            }
+            .unam-toggle-btn:hover {
+                background-color: #f1f5f9 !important;
+            }
+
+            .unam-badge {
+                font-size: 10px !important;
+                padding: 2px 8px !important;
+                border-radius: 4px !important;
+                font-weight: 700 !important;
+                background-color: #cbd5e1 !important;
+                color: #334155 !important;
+            }
+            .unam-badge.active {
+                background-color: #10b981 !important;
+                color: #ffffff !important;
             }
 
             /* Temas y Filtros Visuales */
@@ -144,11 +369,6 @@
                 line-height: 1.3;
                 display: none;
             }
-
-            /* Animación suave para panel lateral */
-            .panel-slide {
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
         `;
         document.head.appendChild(style);
     }
@@ -166,32 +386,29 @@
 
         // Barra Superior Fija
         const topHeader = `
-            <header id="unam-accessibility-header" class="w-full bg-slate-900 text-white shadow-lg border-b border-slate-800">
-                <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
-                    <div class="flex items-center gap-2.5 font-bold tracking-wide">
-                        <i class="fa-solid fa-universal-access text-amber-400 text-lg"></i>
-                        <span class="hidden sm:inline text-slate-200">Herramientas de Accesibilidad</span>
-                        <span class="sm:hidden text-slate-200">Accesibilidad</span>
+            <header id="unam-accessibility-header">
+                <div class="unam-hdr-title">
+                    <i class="fa-solid fa-universal-access" style="color: #f59e0b; font-size: 18px;"></i>
+                    <span>Herramientas de Accesibilidad</span>
+                </div>
+                <div class="unam-hdr-controls">
+                    <div class="unam-btn-group">
+                        <button type="button" id="btn-font-plus" title="Aumentar letra">A+</button>
+                        <button type="button" id="btn-font-minus" title="Reducir letra">A-</button>
+                        <button type="button" id="btn-font-reset" title="Restablecer tamaño"><i class="fa-solid fa-rotate-left"></i></button>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
-                            <button type="button" id="btn-font-plus" class="px-2.5 py-1 hover:bg-slate-700 rounded text-xs font-semibold text-slate-200" title="Aumentar letra">A+</button>
-                            <button type="button" id="btn-font-minus" class="px-2.5 py-1 hover:bg-slate-700 rounded text-xs font-semibold text-slate-200" title="Reducir letra">A-</button>
-                            <button type="button" id="btn-font-reset" class="px-2 py-1 hover:bg-slate-700 rounded text-xs text-slate-400" title="Restablecer tamaño"><i class="fa-solid fa-rotate-left"></i></button>
-                        </div>
-                        <button type="button" id="btn-quick-contrast" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-lg transition text-xs flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-circle-half-stroke"></i>
-                            <span>Alto Contraste</span>
-                        </button>
-                        <button type="button" id="btn-quick-magnifier" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg text-xs flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-magnifying-glass text-amber-400"></i>
-                            <span class="hidden sm:inline">Lupa</span>
-                        </button>
-                        <button type="button" id="btn-open-panel-top" class="px-3.5 py-1.5 bg-blue-700 hover:bg-blue-600 font-bold text-white rounded-lg transition text-xs flex items-center gap-1.5 shadow">
-                            <i class="fa-solid fa-sliders"></i>
-                            <span>Más Opciones</span>
-                        </button>
-                    </div>
+                    <button type="button" id="btn-quick-contrast" class="unam-btn unam-btn-gold">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                        <span>Alto Contraste</span>
+                    </button>
+                    <button type="button" id="btn-quick-magnifier" class="unam-btn">
+                        <i class="fa-solid fa-magnifying-glass" style="color: #f59e0b;"></i>
+                        <span>Lupa</span>
+                    </button>
+                    <button type="button" id="btn-open-panel-top" class="unam-btn unam-btn-blue">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Más Opciones</span>
+                    </button>
                 </div>
             </header>
         `;
@@ -199,120 +416,90 @@
 
         // Botón Flotante Inferior Derecho
         const floatingButton = `
-            <button id="open-accessibility-btn" type="button"
-                    class="fixed bottom-6 right-6 z-[999995] bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
-                    aria-label="Abrir opciones de accesibilidad">
-                <i class="fa-solid fa-universal-access text-2xl"></i>
+            <button id="open-accessibility-btn" type="button" aria-label="Abrir opciones de accesibilidad">
+                <i class="fa-solid fa-universal-access"></i>
             </button>
         `;
 
         // Panel Lateral Deslizante
         const lateralPanel = `
-            <div id="accessibility-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl z-[999999] transform translate-x-full panel-slide overflow-y-auto border-l border-slate-200 dark:border-slate-800">
-                <div class="bg-[#00468B] text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-universal-access text-2xl text-amber-400"></i>
+            <div id="accessibility-panel">
+                <div class="unam-panel-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-universal-access" style="font-size: 22px; color: #f59e0b;"></i>
                         <div>
-                            <h2 class="font-bold text-base leading-tight">Panel de Accesibilidad</h2>
-                            <p class="text-[11px] text-blue-200">ADSDD - UNAM</p>
+                            <div style="font-weight: 700; font-size: 15px;">Panel de Accesibilidad</div>
+                            <div style="font-size: 11px; opacity: 0.8;">ADSDD - UNAM</div>
                         </div>
                     </div>
-                    <button type="button" id="btn-close-panel" class="text-white hover:bg-blue-800 p-2 rounded-lg text-xl transition" aria-label="Cerrar panel">
+                    <button type="button" id="btn-close-panel" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div class="p-5 space-y-6">
+                <div class="unam-panel-body">
                     <div>
-                        <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-font text-blue-600"></i> Texto y Lectura
-                        </h3>
-                        <div class="grid grid-cols-3 gap-2 mb-3">
-                            <button type="button" id="panel-font-plus" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
-                                <i class="fa-solid fa-magnifying-glass-plus text-base"></i><span>Aumentar</span>
-                            </button>
-                            <button type="button" id="panel-font-minus" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
-                                <i class="fa-solid fa-magnifying-glass-minus text-base"></i><span>Reducir</span>
-                            </button>
-                            <button type="button" id="panel-font-reset" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
-                                <i class="fa-solid fa-rotate-left text-base"></i><span>Normal</span>
-                            </button>
+                        <div class="unam-section-title"><i class="fa-solid fa-font" style="color:#00468B;"></i> Texto y Lectura</div>
+                        <div class="unam-grid-3" style="margin-bottom: 10px;">
+                            <button type="button" id="panel-font-plus" class="unam-card-btn"><i class="fa-solid fa-magnifying-glass-plus" style="font-size: 16px;"></i><span>Aumentar</span></button>
+                            <button type="button" id="panel-font-minus" class="unam-card-btn"><i class="fa-solid fa-magnifying-glass-minus" style="font-size: 16px;"></i><span>Reducir</span></button>
+                            <button type="button" id="panel-font-reset" class="unam-card-btn"><i class="fa-solid fa-rotate-left" style="font-size: 16px;"></i><span>Normal</span></button>
                         </div>
-                        <div class="space-y-2">
-                            <button type="button" id="btn-dyslexia" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-book-open mr-2 text-blue-600"></i> Fuente para Dislexia</span>
-                                <span id="badge-dyslexia" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                        <div>
+                            <button type="button" id="btn-dyslexia" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-book-open" style="color:#00468B; margin-right:6px;"></i> Fuente para Dislexia</span>
+                                <span id="badge-dyslexia" class="unam-badge">NO</span>
                             </button>
-                            <button type="button" id="btn-spacing" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-arrows-up-down mr-2 text-blue-600"></i> Espaciado Interlineal</span>
-                                <span id="badge-spacing" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                            <button type="button" id="btn-spacing" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-arrows-up-down" style="color:#00468B; margin-right:6px;"></i> Espaciado Interlineal</span>
+                                <span id="badge-spacing" class="unam-badge">NO</span>
                             </button>
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-circle-half-stroke text-blue-600"></i> Contraste y Pantalla
-                        </h3>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <button type="button" id="theme-default" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold border flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full bg-white border border-slate-400"></span> Normal
-                            </button>
-                            <button type="button" id="theme-high-contrast" class="p-2.5 bg-black text-amber-300 hover:bg-slate-900 rounded-xl text-xs font-semibold border border-amber-400 flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full bg-amber-300 border border-black"></span> Alto Contraste
-                            </button>
-                            <button type="button" id="theme-dark" class="p-2.5 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-semibold border flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full bg-slate-900 border"></span> Modo Oscuro
-                            </button>
-                            <button type="button" id="theme-grayscale" class="p-2.5 bg-slate-300 text-slate-800 hover:bg-slate-400 rounded-xl text-xs font-semibold border flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full bg-slate-500"></span> Escala Grises
-                            </button>
+                        <div class="unam-section-title"><i class="fa-solid fa-circle-half-stroke" style="color:#00468B;"></i> Contraste y Pantalla</div>
+                        <div class="unam-grid-2" style="margin-bottom: 8px;">
+                            <button type="button" id="theme-default" class="unam-card-btn">Normal</button>
+                            <button type="button" id="theme-high-contrast" class="unam-card-btn" style="background:#000; color:#ff0; border-color:#ff0;">Alto Contraste</button>
+                            <button type="button" id="theme-dark" class="unam-card-btn" style="background:#1e293b; color:#fff;">Modo Oscuro</button>
+                            <button type="button" id="theme-grayscale" class="unam-card-btn">Escala Grises</button>
                         </div>
-                        <button type="button" id="theme-invert" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold border flex items-center justify-center gap-2 transition">
-                            <i class="fa-solid fa-arrows-rotate text-blue-600"></i> Invertir Colores
+                        <button type="button" id="theme-invert" class="unam-toggle-btn" style="justify-content: center; gap: 8px;">
+                            <i class="fa-solid fa-arrows-rotate" style="color:#00468B;"></i> Invertir Colores
                         </button>
                     </div>
                     <div>
-                        <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-eye text-blue-600"></i> Apoyo Visual y Lupa
-                        </h3>
-                        <div class="space-y-2">
-                            <button type="button" id="btn-magnifier" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-magnifying-glass mr-2 text-blue-600"></i> Lupa Virtual Interactiva</span>
-                                <span id="badge-magnifier" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                        <div class="unam-section-title"><i class="fa-solid fa-eye" style="color:#00468B;"></i> Apoyo Visual y Lupa</div>
+                        <div>
+                            <button type="button" id="btn-magnifier" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-magnifying-glass" style="color:#00468B; margin-right:6px;"></i> Lupa Virtual Interactiva</span>
+                                <span id="badge-magnifier" class="unam-badge">NO</span>
                             </button>
-                            <button type="button" id="btn-ruler" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-ruler-horizontal mr-2 text-blue-600"></i> Regla de Lectura Visual</span>
-                                <span id="badge-ruler" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                            <button type="button" id="btn-ruler" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-ruler-horizontal" style="color:#00468B; margin-right:6px;"></i> Regla de Lectura Visual</span>
+                                <span id="badge-ruler" class="unam-badge">NO</span>
                             </button>
-                            <button type="button" id="btn-cursor" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-arrow-pointer mr-2 text-blue-600"></i> Cursor Gigante UNAM</span>
-                                <span id="badge-cursor" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                            <button type="button" id="btn-cursor" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-arrow-pointer" style="color:#00468B; margin-right:6px;"></i> Cursor Gigante UNAM</span>
+                                <span id="badge-cursor" class="unam-badge">NO</span>
                             </button>
-                            <button type="button" id="btn-links" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
-                                <span><i class="fa-solid fa-link mr-2 text-blue-600"></i> Resaltar Enlaces</span>
-                                <span id="badge-links" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                            <button type="button" id="btn-links" class="unam-toggle-btn">
+                                <span><i class="fa-solid fa-link" style="color:#00468B; margin-right:6px;"></i> Resaltar Enlaces</span>
+                                <span id="badge-links" class="unam-badge">NO</span>
                             </button>
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-volume-high text-blue-600"></i> Lectura en Voz Alta
-                        </h3>
-                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2.5">
-                            <p class="text-xs text-blue-900 leading-relaxed">
-                                Selecciona texto en la página y haz clic en <strong>Leer</strong>:
-                            </p>
-                            <div class="flex gap-2">
-                                <button type="button" id="btn-read-text" class="flex-1 bg-[#00468B] hover:bg-blue-800 text-white py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                                    <i class="fa-solid fa-play"></i> Leer Texto
-                                </button>
-                                <button type="button" id="btn-stop-text" class="bg-rose-600 hover:bg-rose-700 text-white py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                                    <i class="fa-solid fa-stop"></i> Detener
-                                </button>
+                        <div class="unam-section-title"><i class="fa-solid fa-volume-high" style="color:#00468B;"></i> Lectura en Voz Alta</div>
+                        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px;">
+                            <p style="font-size:11px; color:#1e3a8a; margin: 0 0 8px 0;">Selecciona texto en la página y haz clic en <strong>Leer</strong>:</p>
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" id="btn-read-text" class="unam-btn unam-btn-blue" style="flex:1; justify-content:center;"><i class="fa-solid fa-play"></i> Leer Texto</button>
+                                <button type="button" id="btn-stop-text" class="unam-btn" style="background:#e11d48; color:white;"><i class="fa-solid fa-stop"></i> Detener</button>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="btn-reset-all" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-rotate"></i> Restablecer Ajustes
+                    <button type="button" id="btn-reset-all" class="unam-toggle-btn" style="justify-content:center; color:#e11d48; background:#fff1f2; border-color:#fecdd3; font-weight:700;">
+                        <i class="fa-solid fa-rotate" style="margin-right:6px;"></i> Restablecer Ajustes
                     </button>
                 </div>
             </div>
@@ -329,19 +516,18 @@
         const ruler = document.getElementById('reading-ruler');
 
         function togglePanel() {
-            if (panel) panel.classList.toggle('translate-x-full');
+            if (panel) panel.classList.toggle('panel-open');
         }
 
         function applyFontSize(size) {
             currentFontSize = size;
-            // Modificar tanto html como body garantiza compatibilidad con rem / px / Tailwind
             document.documentElement.style.fontSize = `${currentFontSize}%`;
             body.style.fontSize = `${currentFontSize}%`;
         }
 
         function changeFontSize(step) {
             let newSize = currentFontSize + (step * 10);
-            newSize = Math.min(Math.max(newSize, 80), 180); // Límite seguro entre 80% y 180%
+            newSize = Math.min(Math.max(newSize, 80), 180);
             applyFontSize(newSize);
         }
 
@@ -353,9 +539,11 @@
             const badge = document.getElementById(id);
             if (!badge) return;
             badge.textContent = state ? 'SÍ' : 'NO';
-            badge.className = state
-                ? 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold'
-                : 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+            if (state) {
+                badge.classList.add('active');
+            } else {
+                badge.classList.remove('active');
+            }
         }
 
         function toggleDyslexia() {
