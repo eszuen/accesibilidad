@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Accesibilidad UNAM</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- OpenDyslexic Font CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Colores Institucionales UNAM */
+        .unam-blue { color: #00468B; }
+        .unam-gold { color: #D59F0F; }
+        .bg-unam-blue { background-color: #00468B; }
+        .bg-unam-gold { background-color: #D59F0F; }
+
+        /* ========================================= */
+        /* ESTILOS Y REGLAS DE ACCESIBILIDAD        */
+        /* ========================================= */
+        
+        /* Tema Alto Contraste */
+        .theme-high-contrast {
+            background-color: #000000 !important;
+            color: #FFFF00 !important;
+        }
+        .theme-high-contrast * {
+            background-color: #000000 !important;
+            color: #FFFF00 !important;
+            border-color: #FFFF00 !important;
+        }
+        .theme-high-contrast a {
+            color: #00FFFF !important;
+            text-decoration: underline !important;
+        }
+
+        /* Tema Oscuro */
+        .theme-dark {
+            background-color: #121212 !important;
+            color: #E0E0E0 !important;
+        }
+        .theme-dark h1, .theme-dark h2, .theme-dark p, .theme-dark span, .theme-dark li {
+            color: #F1F5F9 !important;
+        }
+
+        /* Escala de Grises e Inversión */
+        .theme-grayscale {
+            filter: grayscale(100%) !important;
+        }
+
+        .theme-invert {
+            filter: invert(100%) hue-rotate(180deg) !important;
+        }
+
+        /* Fuente para Dislexia */
+        .font-dyslexic {
+            font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+        }
+
+        /* Cursor Gigante */
+        .big-cursor, .big-cursor * {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="%2300468B" stroke="%23ffffff" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>'), auto !important;
+        }
+
+        /* Resaltado de Enlaces */
+        .highlight-links a {
+            background-color: #fef08a !important;
+            color: #000000 !important;
+            font-weight: bold !important;
+            padding: 2px 4px !important;
+            border-radius: 4px !important;
+            text-decoration: underline !important;
+        }
+
+        /* Regla de Lectura Visual */
+        #reading-ruler {
+            position: fixed;
+            pointer-events: none;
+            width: 100%;
+            height: 32px;
+            background: rgba(255, 235, 59, 0.35);
+            border-top: 2px solid #d97706;
+            border-bottom: 2px solid #d97706;
+            z-index: 99999;
+            display: none;
+            transform: translateY(-50%);
+        }
+
+        /* Lupa Virtual Interactiva */
+        #magnifier-glass {
+            position: fixed;
+            width: 190px;
+            height: 190px;
+            border: 3px solid #00468B;
+            border-radius: 50%;
+            cursor: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 100000;
+            background-color: #ffffff;
+            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+            display: none;
+        }
+
+        /* Transición suave para panel */
+        .panel-slide {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-slate-800" id="app-body">
+
+    <!-- Regla de lectura visual -->
+    <div id="reading-ruler"></div>
+
+    <!-- Lupa virtual -->
+    <div id="magnifier-glass"></div>
+
+    <!-- ========================================================================= -->
+    <!-- BARRA SUPERIOR DE ACCESIBILIDAD                                          -->
+    <!-- ========================================================================= -->
+    <header class="w-full bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
+            
+            <div class="flex items-center gap-2.5 font-bold tracking-wide">
+                <i class="fa-solid fa-universal-access text-amber-400 text-lg"></i>
+                <span class="hidden sm:inline text-slate-200">Herramientas de Accesibilidad</span>
+                <span class="sm:hidden text-slate-200">Accesibilidad</span>
+            </div>
+
+            <!-- Controles Rápidos -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Zoom de Texto -->
+                <div class="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
+                    <button onclick="changeFontSize(1.1)" class="px-2.5 py-1 hover:bg-slate-700 rounded text-xs font-semibold text-slate-200" title="Aumentar tamaño de letra">
+                        A+
+                    </button>
+                    <button onclick="changeFontSize(0.9)" class="px-2.5 py-1 hover:bg-slate-700 rounded text-xs font-semibold text-slate-200" title="Reducir tamaño de letra">
+                        A-
+                    </button>
+                    <button onclick="resetFontSize()" class="px-2 py-1 hover:bg-slate-700 rounded text-xs text-slate-400" title="Restablecer tamaño">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <!-- Contraste Rápido -->
+                <button onclick="setTheme(currentTheme === 'high-contrast' ? 'default' : 'high-contrast')" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-lg transition text-xs flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                    <span>Alto Contraste</span>
+                </button>
+
+                <!-- Lupa Rápida -->
+                <button onclick="toggleMagnifier()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-magnifying-glass text-amber-400"></i>
+                    <span class="hidden sm:inline">Lupa</span>
+                </button>
+
+                <!-- Abrir Panel Completo -->
+                <button onclick="toggleAccessibilityPanel()" class="px-3.5 py-1.5 bg-blue-700 hover:bg-blue-600 font-bold text-white rounded-lg transition text-xs flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Más Opciones</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Botón Flotante de Accesibilidad -->
+    <button id="open-accessibility-btn" 
+            onclick="toggleAccessibilityPanel()" 
+            class="fixed bottom-6 right-6 z-50 bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
+            aria-label="Abrir panel de opciones de accesibilidad">
+        <i class="fa-solid fa-universal-access text-2xl"></i>
+    </button>
+
+    <!-- Panel Lateral Flotante de Accesibilidad -->
+    <div id="accessibility-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full panel-slide overflow-y-auto border-l border-slate-200 dark:border-slate-800">
+        
+        <!-- Header del Panel -->
+        <div class="bg-[#00468B] text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-universal-access text-2xl text-amber-400"></i>
+                <div>
+                    <h2 class="font-bold text-base leading-tight">Panel de Accesibilidad</h2>
+                    <p class="text-[11px] text-blue-200">ADSDD - UNAM</p>
+                </div>
+            </div>
+            <button onclick="toggleAccessibilityPanel()" class="text-white hover:bg-blue-800 p-2 rounded-lg text-xl transition" aria-label="Cerrar panel">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="p-5 space-y-6">
+
+            <!-- Sección 1: Tamaño y Tipografía -->
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-font text-blue-600"></i> Texto y Lectura
+                </h3>
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <button onclick="changeFontSize(1.1)" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
+                        <i class="fa-solid fa-magnifying-glass-plus text-base"></i>
+                        <span>Aumentar</span>
+                    </button>
+                    <button onclick="changeFontSize(0.9)" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
+                        <i class="fa-solid fa-magnifying-glass-minus text-base"></i>
+                        <span>Reducir</span>
+                    </button>
+                    <button onclick="resetFontSize()" class="p-3 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-center font-bold text-xs border flex flex-col items-center gap-1 transition">
+                        <i class="fa-solid fa-rotate-left text-base"></i>
+                        <span>Normal</span>
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="toggleDyslexiaFont()" id="btn-dyslexia" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-book-open mr-2 text-blue-600"></i> Fuente para Dislexia</span>
+                        <span id="badge-dyslexia" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+
+                    <button onclick="toggleLineSpacing()" id="btn-spacing" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-arrows-up-down mr-2 text-blue-600"></i> Espaciado Interlineal</span>
+                        <span id="badge-spacing" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección 2: Contraste y Color -->
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-half-stroke text-blue-600"></i> Contraste y Pantalla
+                </h3>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <button onclick="setTheme('default')" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold border flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-white border border-slate-400"></span> Normal
+                    </button>
+                    <button onclick="setTheme('high-contrast')" class="p-2.5 bg-black text-amber-300 hover:bg-slate-900 rounded-xl text-xs font-semibold border border-amber-400 flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-300 border border-black"></span> Alto Contraste
+                    </button>
+                    <button onclick="setTheme('dark')" class="p-2.5 bg-slate-800 text-white hover:bg-slate-900 rounded-xl text-xs font-semibold border flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-slate-900 border"></span> Modo Oscuro
+                    </button>
+                    <button onclick="setTheme('grayscale')" class="p-2.5 bg-slate-300 text-slate-800 hover:bg-slate-400 rounded-xl text-xs font-semibold border flex items-center gap-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-slate-500"></span> Escala Grises
+                    </button>
+                </div>
+                <button onclick="setTheme('invert')" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold border flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-arrows-rotate text-blue-600"></i> Invertir Colores
+                </button>
+            </div>
+
+            <!-- Sección 3: Herramientas Visuales y Lupa -->
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-eye text-blue-600"></i> Apoyo Visual y Lupa
+                </h3>
+                <div class="space-y-2">
+                    <button onclick="toggleMagnifier()" id="btn-magnifier" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-magnifying-glass mr-2 text-blue-600"></i> Lupa Virtual Interactiva</span>
+                        <span id="badge-magnifier" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+
+                    <button onclick="toggleReadingRuler()" id="btn-ruler" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-ruler-horizontal mr-2 text-blue-600"></i> Regla de Lectura Visual</span>
+                        <span id="badge-ruler" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+
+                    <button onclick="toggleBigCursor()" id="btn-cursor" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-arrow-pointer mr-2 text-blue-600"></i> Cursor Gigante UNAM</span>
+                        <span id="badge-cursor" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+
+                    <button onclick="toggleHighlightLinks()" id="btn-links" class="w-full p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-left text-xs font-semibold border flex items-center justify-between transition">
+                        <span><i class="fa-solid fa-link mr-2 text-blue-600"></i> Resaltar Enlaces</span>
+                        <span id="badge-links" class="text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700">NO</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección 4: Lector de Voz (Text-to-Speech) -->
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-volume-high text-blue-600"></i> Lectura en Voz Alta
+                </h3>
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2.5">
+                    <p class="text-xs text-blue-900 leading-relaxed">
+                        Selecciona cualquier texto en la página y presiona <strong>Leer</strong> para escucharlo en voz alta:
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="readSelectedText()" class="flex-1 bg-[#00468B] hover:bg-blue-800 text-white py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-play"></i> Leer Texto
+                        </button>
+                        <button onclick="stopSpeech()" class="bg-rose-600 hover:bg-rose-700 text-white py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-stop"></i> Detener
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón para Restablecer Ajustes -->
+            <button onclick="resetAllAccessibility()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-rotate"></i> Restablecer Ajustes
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        /* ========================================================================= */
+        /* LÓGICA DE HERRAMIENTAS DE ACCESIBILIDAD                                   */
+        /* ========================================================================= */
+        let currentFontSize = 100;
+        let isDyslexicFont = false;
+        let isLineSpacing = false;
+        let isMagnifierActive = false;
+        let isRulerActive = false;
+        let isBigCursor = false;
+        let isLinksHighlighted = false;
+        let currentTheme = 'default';
+
+        const appBody = document.getElementById('app-body');
+        const panel = document.getElementById('accessibility-panel');
+        const magnifierGlass = document.getElementById('magnifier-glass');
+        const readingRuler = document.getElementById('reading-ruler');
+
+        /* Toggle Panel Lateral */
+        function toggleAccessibilityPanel() {
+            panel.classList.toggle('translate-x-full');
+        }
+
+        /* Ajuste de Tamaño de Fuente */
+        function changeFontSize(factor) {
+            currentFontSize = Math.min(Math.max(currentFontSize * factor, 80), 160);
+            document.body.style.fontSize = `${currentFontSize}%`;
+        }
+
+        function resetFontSize() {
+            currentFontSize = 100;
+            document.body.style.fontSize = '100%';
+        }
+
+        /* Tipografía para Dislexia */
+        function toggleDyslexiaFont() {
+            isDyslexicFont = !isDyslexicFont;
+            const badge = document.getElementById('badge-dyslexia');
+            if (isDyslexicFont) {
+                appBody.classList.add('font-dyslexic');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+            } else {
+                appBody.classList.remove('font-dyslexic');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+            }
+        }
+
+        /* Espaciado de Líneas */
+        function toggleLineSpacing() {
+            isLineSpacing = !isLineSpacing;
+            const badge = document.getElementById('badge-spacing');
+            if (isLineSpacing) {
+                appBody.style.lineHeight = '2.2';
+                appBody.style.letterSpacing = '0.08em';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+            } else {
+                appBody.style.lineHeight = 'normal';
+                appBody.style.letterSpacing = 'normal';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+            }
+        }
+
+        /* Selección de Temas de Contraste */
+        function setTheme(theme) {
+            appBody.classList.remove('theme-high-contrast', 'theme-dark', 'theme-grayscale', 'theme-invert');
+            currentTheme = theme;
+
+            if (theme === 'high-contrast') {
+                appBody.classList.add('theme-high-contrast');
+            } else if (theme === 'dark') {
+                appBody.classList.add('theme-dark');
+            } else if (theme === 'grayscale') {
+                appBody.classList.add('theme-grayscale');
+            } else if (theme === 'invert') {
+                appBody.classList.add('theme-invert');
+            }
+        }
+
+        /* Lupa Virtual Interactiva */
+        function toggleMagnifier() {
+            isMagnifierActive = !isMagnifierActive;
+            const badge = document.getElementById('badge-magnifier');
+            
+            if (isMagnifierActive) {
+                magnifierGlass.style.display = 'flex';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+                document.addEventListener('mousemove', moveMagnifier);
+            } else {
+                magnifierGlass.style.display = 'none';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+                document.removeEventListener('mousemove', moveMagnifier);
+            }
+        }
+
+        function moveMagnifier(e) {
+            if (!isMagnifierActive) return;
+            const glass = magnifierGlass;
+
+            const x = e.clientX;
+            const y = e.clientY;
+
+            glass.style.left = (x - glass.offsetWidth / 2) + 'px';
+            glass.style.top = (y - glass.offsetHeight / 2) + 'px';
+
+            const target = document.elementFromPoint(x, y);
+            if (target && target !== glass && !glass.contains(target)) {
+                const text = target.innerText || target.alt || target.ariaLabel || '';
+                if (text) {
+                    glass.innerText = text.substring(0, 90) + (text.length > 90 ? '...' : '');
+                    glass.style.padding = '12px';
+                    glass.style.fontSize = '16px';
+                    glass.style.fontWeight = 'bold';
+                    glass.style.color = '#00468B';
+                }
+            }
+        }
+
+        /* Regla de Lectura Visual */
+        function toggleReadingRuler() {
+            isRulerActive = !isRulerActive;
+            const badge = document.getElementById('badge-ruler');
+
+            if (isRulerActive) {
+                readingRuler.style.display = 'block';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+                document.addEventListener('mousemove', moveRuler);
+            } else {
+                readingRuler.style.display = 'none';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+                document.removeEventListener('mousemove', moveRuler);
+            }
+        }
+
+        function moveRuler(e) {
+            if (isRulerActive) {
+                readingRuler.style.top = e.clientY + 'px';
+            }
+        }
+
+        /* Cursor Gigante */
+        function toggleBigCursor() {
+            isBigCursor = !isBigCursor;
+            const badge = document.getElementById('badge-cursor');
+            if (isBigCursor) {
+                appBody.classList.add('big-cursor');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+            } else {
+                appBody.classList.remove('big-cursor');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+            }
+        }
+
+        /* Resaltar Enlaces */
+        function toggleHighlightLinks() {
+            isLinksHighlighted = !isLinksHighlighted;
+            const badge = document.getElementById('badge-links');
+            if (isLinksHighlighted) {
+                appBody.classList.add('highlight-links');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+            } else {
+                appBody.classList.remove('highlight-links');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+            }
+        }
+
+        /* Lectura de Texto en Voz Alta (Text-To-Speech) */
+        let synth = window.speechSynthesis;
+
+        function readSelectedText() {
+            stopSpeech();
+
+            let textToRead = window.getSelection().toString().trim();
+            if (!textToRead) {
+                textToRead = "Por favor, selecciona un texto de la página para escucharlo en voz alta.";
+            }
+
+            if ('speechSynthesis' in window && textToRead) {
+                const utterance = new SpeechSynthesisUtterance(textToRead);
+                utterance.lang = 'es-MX';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                synth.speak(utterance);
+            }
+        }
+
+        function stopSpeech() {
+            if (synth && synth.speaking) {
+                synth.cancel();
+            }
+        }
+
+        /* Restablecer Todo */
+        function resetAllAccessibility() {
+            resetFontSize();
+            setTheme('default');
+            stopSpeech();
+
+            if (isDyslexicFont) toggleDyslexiaFont();
+            if (isLineSpacing) toggleLineSpacing();
+            if (isMagnifierActive) toggleMagnifier();
+            if (isRulerActive) toggleReadingRuler();
+            if (isBigCursor) toggleBigCursor();
+            if (isLinksHighlighted) toggleHighlightLinks();
+        }
+    </script>
+</body>
+</html>
