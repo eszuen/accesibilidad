@@ -1,5 +1,5 @@
 (function() {
-    // Evitar doble inyección del widget
+    // Evitar doble inyección del widget en la misma página
     if (window.UNAM_ACCESSIBILITY_LOADED) return;
     window.UNAM_ACCESSIBILITY_LOADED = true;
 
@@ -17,7 +17,7 @@
     function loadDependencies() {
         const head = document.head || document.getElementsByTagName('head')[0];
 
-        // Font Awesome Icons
+        // Font Awesome Icons CDN
         if (!document.querySelector('link[href*="font-awesome"]')) {
             const fa = document.createElement('link');
             fa.rel = 'stylesheet';
@@ -25,7 +25,7 @@
             head.appendChild(fa);
         }
 
-        // OpenDyslexic Font
+        // OpenDyslexic Font CDN
         if (!document.querySelector('link[href*="open-dyslexic"]')) {
             const od = document.createElement('link');
             od.rel = 'stylesheet';
@@ -33,7 +33,7 @@
             head.appendChild(od);
         }
 
-        // Tailwind CSS (si no existe previamente)
+        // Tailwind CSS CDN (si el sitio no lo incluye)
         if (!window.tailwind && !document.querySelector('script[src*="tailwindcss"]')) {
             const tw = document.createElement('script');
             tw.src = 'https://cdn.tailwindcss.com';
@@ -45,12 +45,29 @@
         const style = document.createElement('style');
         style.id = 'unam-accessibility-styles';
         style.textContent = `
-            /* Aislamos la barra y el panel para que no cambien de tamaño con el zoom del texto */
+            /* Aislamos los controles para que mantengan un tamaño de fuente fijo y no escalen con el zoom de lectura */
             #unam-accessibility-header, #accessibility-panel, #open-accessibility-btn {
                 font-size: 16px !important;
+                line-height: 1.5 !important;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             }
 
-            /* Estilos y Reglas Globales de Accesibilidad */
+            /* Garantizar la posición fija permanente de la barra superior */
+            #unam-accessibility-header {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                z-index: 999980 !important;
+            }
+
+            /* Empujar el contenido original hacia abajo para no solaparlo con la barra fija */
+            body.unam-accessibility-active {
+                padding-top: 50px !important;
+            }
+
+            /* Temas y Filtros Visuales */
             .theme-high-contrast, .theme-high-contrast * {
                 background-color: #000000 !important;
                 color: #FFFF00 !important;
@@ -64,7 +81,7 @@
                 background-color: #121212 !important;
                 color: #E0E0E0 !important;
             }
-            .theme-dark h1, .theme-dark h2, .theme-dark p, .theme-dark span, .theme-dark li {
+            .theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark p, .theme-dark span, .theme-dark li {
                 color: #F1F5F9 !important;
             }
             .theme-grayscale {
@@ -73,12 +90,18 @@
             .theme-invert {
                 filter: invert(100%) hue-rotate(180deg) !important;
             }
+
+            /* Tipografía para Dislexia */
             .font-dyslexic, .font-dyslexic * {
                 font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
             }
+
+            /* Cursor Gigante */
             .big-cursor, .big-cursor * {
                 cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="%2300468B" stroke="%23ffffff" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>'), auto !important;
             }
+
+            /* Resaltado de Enlaces */
             .highlight-links a {
                 background-color: #fef08a !important;
                 color: #000000 !important;
@@ -87,6 +110,8 @@
                 border-radius: 4px !important;
                 text-decoration: underline !important;
             }
+
+            /* Regla de Lectura */
             #reading-ruler {
                 position: fixed;
                 pointer-events: none;
@@ -95,10 +120,12 @@
                 background: rgba(255, 235, 59, 0.35);
                 border-top: 2px solid #d97706;
                 border-bottom: 2px solid #d97706;
-                z-index: 999999;
+                z-index: 999990;
                 display: none;
                 transform: translateY(-50%);
             }
+
+            /* Lupa Virtual */
             #magnifier-glass {
                 position: fixed;
                 width: 190px;
@@ -117,6 +144,8 @@
                 line-height: 1.3;
                 display: none;
             }
+
+            /* Animación suave para panel lateral */
             .panel-slide {
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
@@ -126,18 +155,19 @@
 
     function injectHTML() {
         const body = document.body;
+        body.classList.add('unam-accessibility-active');
 
-        // Regla de lectura y lupa
+        // Elementos auxiliares (Regla y Lupa)
         const helperElements = `
             <div id="reading-ruler"></div>
             <div id="magnifier-glass"></div>
         `;
         body.insertAdjacentHTML('afterbegin', helperElements);
 
-        // Barra Superior
+        // Barra Superior Fija
         const topHeader = `
-            <header id="unam-accessibility-header" class="w-full bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
-                <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
+            <header id="unam-accessibility-header" class="w-full bg-slate-900 text-white shadow-lg border-b border-slate-800">
+                <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                     <div class="flex items-center gap-2.5 font-bold tracking-wide">
                         <i class="fa-solid fa-universal-access text-amber-400 text-lg"></i>
                         <span class="hidden sm:inline text-slate-200">Herramientas de Accesibilidad</span>
@@ -167,16 +197,16 @@
         `;
         body.insertAdjacentHTML('afterbegin', topHeader);
 
-        // Botón Flotante
+        // Botón Flotante Inferior Derecho
         const floatingButton = `
             <button id="open-accessibility-btn" type="button"
-                    class="fixed bottom-6 right-6 z-[999999] bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
+                    class="fixed bottom-6 right-6 z-[999995] bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
                     aria-label="Abrir opciones de accesibilidad">
                 <i class="fa-solid fa-universal-access text-2xl"></i>
             </button>
         `;
 
-        // Panel Lateral
+        // Panel Lateral Deslizante
         const lateralPanel = `
             <div id="accessibility-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl z-[999999] transform translate-x-full panel-slide overflow-y-auto border-l border-slate-200 dark:border-slate-800">
                 <div class="bg-[#00468B] text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
@@ -304,14 +334,14 @@
 
         function applyFontSize(size) {
             currentFontSize = size;
-            // Modificar tanto html como body garantiza compatibilidad con Tailwind CSS / rem / px
+            // Modificar tanto html como body garantiza compatibilidad con rem / px / Tailwind
             document.documentElement.style.fontSize = `${currentFontSize}%`;
             body.style.fontSize = `${currentFontSize}%`;
         }
 
         function changeFontSize(step) {
             let newSize = currentFontSize + (step * 10);
-            newSize = Math.min(Math.max(newSize, 80), 180); // Límite entre 80% y 180%
+            newSize = Math.min(Math.max(newSize, 80), 180); // Límite seguro entre 80% y 180%
             applyFontSize(newSize);
         }
 
@@ -422,7 +452,7 @@
             if (isLinksHighlighted) toggleLinks();
         }
 
-        // Binds
+        // Asignación de eventos mouse y botones
         document.addEventListener('mousemove', moveMagnifier);
         document.addEventListener('mousemove', moveRuler);
 
