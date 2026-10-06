@@ -92,7 +92,7 @@
             background: rgba(255, 235, 59, 0.35);
             border-top: 2px solid #d97706;
             border-bottom: 2px solid #d97706;
-            z-index: 999999;
+            z-index: 99999;
             display: none;
             transform: translateY(-50%);
         }
@@ -107,7 +107,7 @@
             cursor: none;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             pointer-events: none;
-            z-index: 1000000;
+            z-index: 100000;
             background-color: #ffffff;
             overflow: hidden;
             align-items: center;
@@ -179,16 +179,16 @@
         </div>
     </header>
 
-    <!-- Botón Flotante de Accesibilidad (Ubicado en la parte inferior derecha) -->
+    <!-- Botón Flotante de Accesibilidad -->
     <button id="open-accessibility-btn" 
             onclick="toggleAccessibilityPanel()" 
-            class="fixed bottom-6 right-6 z-[999999] bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
+            class="fixed bottom-6 right-6 z-50 bg-[#00468B] hover:bg-[#003569] text-white p-4 rounded-full shadow-2xl flex items-center justify-center focus:ring-4 focus:ring-blue-300 focus:outline-none transition-transform hover:scale-110"
             aria-label="Abrir panel de opciones de accesibilidad">
         <i class="fa-solid fa-universal-access text-2xl"></i>
     </button>
 
-    <!-- Panel Lateral Flotante de Accesibilidad (Súper z-index para solaparse a toda la pantalla) -->
-    <div id="accessibility-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl z-[999999] transform translate-x-full panel-slide overflow-y-auto border-l border-slate-200 dark:border-slate-800">
+    <!-- Panel Lateral Flotante de Accesibilidad -->
+    <div id="accessibility-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full panel-slide overflow-y-auto border-l border-slate-200 dark:border-slate-800">
         
         <!-- Header del Panel -->
         <div class="bg-[#00468B] text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
@@ -321,36 +321,8 @@
 
     <script>
         /* ========================================================================= */
-        /* SOPORTE DE MARCOS / IFRAMES Y LÓGICA DE ACCESIBILIDAD                      */
+        /* LÓGICA DE HERRAMIENTAS DE ACCESIBILIDAD                                   */
         /* ========================================================================= */
-        
-        // Obtiene el documento raíz o superior si está dentro de un marco (iframe)
-        function getTargetDoc() {
-            try {
-                if (window.top && window.top.document) {
-                    return window.top.document;
-                }
-            } catch (e) {
-                // Dominio cruzado o restricción de seguridad
-            }
-            return document;
-        }
-
-        // Obtiene la ventana superior para eventos de ratón globales
-        function getTargetWin() {
-            try {
-                if (window.top && window.top.document) {
-                    return window.top;
-                }
-            } catch (e) {
-                // Dominio cruzado
-            }
-            return window;
-        }
-
-        const targetDoc = getTargetDoc();
-        const targetWin = getTargetWin();
-
         let currentFontSize = 100;
         let isDyslexicFont = false;
         let isLineSpacing = false;
@@ -360,133 +332,95 @@
         let isLinksHighlighted = false;
         let currentTheme = 'default';
 
-        let appBody = targetDoc.body || document.getElementById('app-body');
-        let panel = document.getElementById('accessibility-panel');
-        let magnifierGlass = document.getElementById('magnifier-glass');
-        let readingRuler = document.getElementById('reading-ruler');
-        let floatBtn = document.getElementById('open-accessibility-btn');
-
-        // Mueve los elementos flotantes e inyecta estilos al documento superior si está dentro de un marco
-        function initFrameIntegration() {
-            if (targetDoc !== document) {
-                // Mover panel flotante, lupa, regla y botón flotante al documento raíz
-                if (panel) targetDoc.body.appendChild(panel);
-                if (magnifierGlass) targetDoc.body.appendChild(magnifierGlass);
-                if (readingRuler) targetDoc.body.appendChild(readingRuler);
-                if (floatBtn) targetDoc.body.appendChild(floatBtn);
-
-                // Re-obtener referencias en el contexto del documento objetivo
-                panel = targetDoc.getElementById('accessibility-panel') || panel;
-                magnifierGlass = targetDoc.getElementById('magnifier-glass') || magnifierGlass;
-                readingRuler = targetDoc.getElementById('reading-ruler') || readingRuler;
-                floatBtn = targetDoc.getElementById('open-accessibility-btn') || floatBtn;
-
-                // Copiar hojas de estilo necesarias al head del marco superior
-                const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
-                styles.forEach(style => {
-                    targetDoc.head.appendChild(style.cloneNode(true));
-                });
-            }
-        }
+        const appBody = document.getElementById('app-body');
+        const panel = document.getElementById('accessibility-panel');
+        const magnifierGlass = document.getElementById('magnifier-glass');
+        const readingRuler = document.getElementById('reading-ruler');
 
         /* Toggle Panel Lateral */
         function toggleAccessibilityPanel() {
-            if (panel) {
-                panel.classList.toggle('translate-x-full');
-            }
+            panel.classList.toggle('translate-x-full');
         }
 
         /* Ajuste de Tamaño de Fuente */
         function changeFontSize(factor) {
             currentFontSize = Math.min(Math.max(currentFontSize * factor, 80), 160);
-            targetDoc.body.style.fontSize = `${currentFontSize}%`;
+            document.body.style.fontSize = `${currentFontSize}%`;
         }
 
         function resetFontSize() {
             currentFontSize = 100;
-            targetDoc.body.style.fontSize = '100%';
+            document.body.style.fontSize = '100%';
         }
 
         /* Tipografía para Dislexia */
         function toggleDyslexiaFont() {
             isDyslexicFont = !isDyslexicFont;
-            const badge = targetDoc.getElementById('badge-dyslexia') || document.getElementById('badge-dyslexia');
+            const badge = document.getElementById('badge-dyslexia');
             if (isDyslexicFont) {
-                targetDoc.body.classList.add('font-dyslexic');
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
+                appBody.classList.add('font-dyslexic');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
             } else {
-                targetDoc.body.classList.remove('font-dyslexic');
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
+                appBody.classList.remove('font-dyslexic');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
             }
         }
 
         /* Espaciado de Líneas */
         function toggleLineSpacing() {
             isLineSpacing = !isLineSpacing;
-            const badge = targetDoc.getElementById('badge-spacing') || document.getElementById('badge-spacing');
+            const badge = document.getElementById('badge-spacing');
             if (isLineSpacing) {
-                targetDoc.body.style.lineHeight = '2.2';
-                targetDoc.body.style.letterSpacing = '0.08em';
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
+                appBody.style.lineHeight = '2.2';
+                appBody.style.letterSpacing = '0.08em';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
             } else {
-                targetDoc.body.style.lineHeight = 'normal';
-                targetDoc.body.style.letterSpacing = 'normal';
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
+                appBody.style.lineHeight = 'normal';
+                appBody.style.letterSpacing = 'normal';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
             }
         }
 
         /* Selección de Temas de Contraste */
         function setTheme(theme) {
-            targetDoc.body.classList.remove('theme-high-contrast', 'theme-dark', 'theme-grayscale', 'theme-invert');
+            appBody.classList.remove('theme-high-contrast', 'theme-dark', 'theme-grayscale', 'theme-invert');
             currentTheme = theme;
 
             if (theme === 'high-contrast') {
-                targetDoc.body.classList.add('theme-high-contrast');
+                appBody.classList.add('theme-high-contrast');
             } else if (theme === 'dark') {
-                targetDoc.body.classList.add('theme-dark');
+                appBody.classList.add('theme-dark');
             } else if (theme === 'grayscale') {
-                targetDoc.body.classList.add('theme-grayscale');
+                appBody.classList.add('theme-grayscale');
             } else if (theme === 'invert') {
-                targetDoc.body.classList.add('theme-invert');
+                appBody.classList.add('theme-invert');
             }
         }
 
-        /* Lupa Virtual Interactiva en Toda la Pantalla */
+        /* Lupa Virtual Interactiva */
         function toggleMagnifier() {
             isMagnifierActive = !isMagnifierActive;
-            const badge = targetDoc.getElementById('badge-magnifier') || document.getElementById('badge-magnifier');
+            const badge = document.getElementById('badge-magnifier');
             
             if (isMagnifierActive) {
-                if (magnifierGlass) magnifierGlass.style.display = 'flex';
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
-                targetWin.addEventListener('mousemove', moveMagnifier);
+                magnifierGlass.style.display = 'flex';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+                document.addEventListener('mousemove', moveMagnifier);
             } else {
-                if (magnifierGlass) magnifierGlass.style.display = 'none';
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
-                targetWin.removeEventListener('mousemove', moveMagnifier);
+                magnifierGlass.style.display = 'none';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+                document.removeEventListener('mousemove', moveMagnifier);
             }
         }
 
         function moveMagnifier(e) {
-            if (!isMagnifierActive || !magnifierGlass) return;
+            if (!isMagnifierActive) return;
             const glass = magnifierGlass;
 
             const x = e.clientX;
@@ -495,7 +429,7 @@
             glass.style.left = (x - glass.offsetWidth / 2) + 'px';
             glass.style.top = (y - glass.offsetHeight / 2) + 'px';
 
-            const target = targetDoc.elementFromPoint(x, y);
+            const target = document.elementFromPoint(x, y);
             if (target && target !== glass && !glass.contains(target)) {
                 const text = target.innerText || target.alt || target.ariaLabel || '';
                 if (text) {
@@ -511,27 +445,23 @@
         /* Regla de Lectura Visual */
         function toggleReadingRuler() {
             isRulerActive = !isRulerActive;
-            const badge = targetDoc.getElementById('badge-ruler') || document.getElementById('badge-ruler');
+            const badge = document.getElementById('badge-ruler');
 
             if (isRulerActive) {
-                if (readingRuler) readingRuler.style.display = 'block';
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
-                targetWin.addEventListener('mousemove', moveRuler);
+                readingRuler.style.display = 'block';
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
+                document.addEventListener('mousemove', moveRuler);
             } else {
-                if (readingRuler) readingRuler.style.display = 'none';
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
-                targetWin.removeEventListener('mousemove', moveRuler);
+                readingRuler.style.display = 'none';
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
+                document.removeEventListener('mousemove', moveRuler);
             }
         }
 
         function moveRuler(e) {
-            if (isRulerActive && readingRuler) {
+            if (isRulerActive) {
                 readingRuler.style.top = e.clientY + 'px';
             }
         }
@@ -539,38 +469,30 @@
         /* Cursor Gigante */
         function toggleBigCursor() {
             isBigCursor = !isBigCursor;
-            const badge = targetDoc.getElementById('badge-cursor') || document.getElementById('badge-cursor');
+            const badge = document.getElementById('badge-cursor');
             if (isBigCursor) {
-                targetDoc.body.classList.add('big-cursor');
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
+                appBody.classList.add('big-cursor');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
             } else {
-                targetDoc.body.classList.remove('big-cursor');
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
+                appBody.classList.remove('big-cursor');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
             }
         }
 
         /* Resaltar Enlaces */
         function toggleHighlightLinks() {
             isLinksHighlighted = !isLinksHighlighted;
-            const badge = targetDoc.getElementById('badge-links') || document.getElementById('badge-links');
+            const badge = document.getElementById('badge-links');
             if (isLinksHighlighted) {
-                targetDoc.body.classList.add('highlight-links');
-                if (badge) {
-                    badge.textContent = 'SÍ';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
-                }
+                appBody.classList.add('highlight-links');
+                badge.textContent = 'SÍ';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold';
             } else {
-                targetDoc.body.classList.remove('highlight-links');
-                if (badge) {
-                    badge.textContent = 'NO';
-                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
-                }
+                appBody.classList.remove('highlight-links');
+                badge.textContent = 'NO';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-300 text-slate-700';
             }
         }
 
@@ -580,12 +502,10 @@
         function readSelectedText() {
             stopSpeech();
 
-            let selection = targetWin.getSelection ? targetWin.getSelection().toString().trim() : '';
-            if (!selection && window.getSelection) {
-                selection = window.getSelection().toString().trim();
+            let textToRead = window.getSelection().toString().trim();
+            if (!textToRead) {
+                textToRead = "Por favor, selecciona un texto de la página para escucharlo en voz alta.";
             }
-
-            let textToRead = selection || "Por favor, selecciona un texto de la página para escucharlo en voz alta.";
 
             if ('speechSynthesis' in window && textToRead) {
                 const utterance = new SpeechSynthesisUtterance(textToRead);
@@ -615,10 +535,6 @@
             if (isBigCursor) toggleBigCursor();
             if (isLinksHighlighted) toggleHighlightLinks();
         }
-
-        // Inicializar integración de marco al cargar la ventana
-        window.addEventListener('DOMContentLoaded', initFrameIntegration);
-        initFrameIntegration();
     </script>
 </body>
 </html>
