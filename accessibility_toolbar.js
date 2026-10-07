@@ -38,16 +38,18 @@
         const style = document.createElement('style');
         style.id = 'unam-accessibility-styles';
         style.textContent = `
-            /* Aislamos los controles para que mantengan un tamaño de fuente fijo */
+            /* Isolación de controles del Widget */
             #unam-accessibility-header, #accessibility-panel, #open-accessibility-btn {
                 font-size: 14px !important;
                 line-height: 1.4 !important;
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
                 box-sizing: border-box !important;
+                zoom: 1 !important;
             }
 
             #unam-accessibility-header *, #accessibility-panel *, #open-accessibility-btn * {
                 box-sizing: border-box !important;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             }
 
             /* Garantizar la posición fija permanente de la barra superior */
@@ -292,32 +294,29 @@
                 color: #ffffff !important;
             }
 
-            /* Temas y Filtros Visuales */
-            .theme-high-contrast, .theme-high-contrast * {
+            /* Temas y Filtros Visuales Excluyendo la Interfaz del Widget */
+            body.theme-high-contrast *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 background-color: #000000 !important;
                 color: #FFFF00 !important;
                 border-color: #FFFF00 !important;
             }
-            .theme-high-contrast a {
+            body.theme-high-contrast a:not(#unam-accessibility-header *):not(#accessibility-panel *) {
                 color: #00FFFF !important;
                 text-decoration: underline !important;
             }
-            .theme-dark {
+            body.theme-dark *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 background-color: #121212 !important;
                 color: #E0E0E0 !important;
             }
-            .theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark p, .theme-dark span, .theme-dark li {
-                color: #F1F5F9 !important;
-            }
-            .theme-grayscale {
+            body.theme-grayscale *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 filter: grayscale(100%) !important;
             }
-            .theme-invert {
+            body.theme-invert *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 filter: invert(100%) hue-rotate(180deg) !important;
             }
 
-            /* Tipografía para Dislexia */
-            .font-dyslexic, .font-dyslexic * {
+            /* Tipografía para Dislexia en la página */
+            .font-dyslexic *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
             }
 
@@ -327,7 +326,7 @@
             }
 
             /* Resaltado de Enlaces */
-            .highlight-links a {
+            .highlight-links a:not(#unam-accessibility-header *):not(#accessibility-panel *) {
                 background-color: #fef08a !important;
                 color: #000000 !important;
                 font-weight: bold !important;
@@ -519,10 +518,28 @@
             if (panel) panel.classList.toggle('panel-open');
         }
 
+        // FUNCIÓN DE ZOOM CORREGIDA
         function applyFontSize(size) {
             currentFontSize = size;
-            document.documentElement.style.fontSize = `${currentFontSize}%`;
-            body.style.fontSize = `${currentFontSize}%`;
+            let fontStyle = document.getElementById('unam-font-size-override');
+            if (!fontStyle) {
+                fontStyle = document.createElement('style');
+                fontStyle.id = 'unam-font-size-override';
+                document.head.appendChild(fontStyle);
+            }
+
+            if (currentFontSize === 100) {
+                fontStyle.textContent = '';
+                return;
+            }
+
+            const factor = currentFontSize / 100;
+            // Forzar el redimensionamiento en todos los elementos del sitio excluyendo los controles del Widget
+            fontStyle.textContent = `
+                body *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *):not(#magnifier-glass):not(#reading-ruler) {
+                    zoom: ${factor} !important;
+                }
+            `;
         }
 
         function changeFontSize(step) {
@@ -554,8 +571,23 @@
 
         function toggleSpacing() {
             isLineSpacing = !isLineSpacing;
-            body.style.lineHeight = isLineSpacing ? '2.2' : 'normal';
-            body.style.letterSpacing = isLineSpacing ? '0.08em' : 'normal';
+            let spacingStyle = document.getElementById('unam-spacing-override');
+            if (!spacingStyle) {
+                spacingStyle = document.createElement('style');
+                spacingStyle.id = 'unam-spacing-override';
+                document.head.appendChild(spacingStyle);
+            }
+
+            if (isLineSpacing) {
+                spacingStyle.textContent = `
+                    body *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
+                        line-height: 2 !important;
+                        letter-spacing: 0.08em !important;
+                    }
+                `;
+            } else {
+                spacingStyle.textContent = '';
+            }
             updateBadge('badge-spacing', isLineSpacing);
         }
 
