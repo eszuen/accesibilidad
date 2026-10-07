@@ -3,6 +3,7 @@
     if (window.UNAM_ACCESSIBILITY_LOADED) return;
     window.UNAM_ACCESSIBILITY_LOADED = true;
 
+
     // Estado global de accesibilidad
     let currentFontSize = 100;
     let isDyslexicFont = false;
@@ -14,8 +15,10 @@
     let currentTheme = 'default';
     let synth = window.speechSynthesis;
 
+
     function loadDependencies() {
         const head = document.head || document.getElementsByTagName('head')[0];
+
 
         // Font Awesome Icons CDN
         if (!document.querySelector('link[href*="font-awesome"]')) {
@@ -25,6 +28,7 @@
             head.appendChild(fa);
         }
 
+
         // OpenDyslexic Font CDN
         if (!document.querySelector('link[href*="open-dyslexic"]')) {
             const od = document.createElement('link');
@@ -33,6 +37,7 @@
             head.appendChild(od);
         }
     }
+
 
     function injectStyles() {
         const style = document.createElement('style');
@@ -47,10 +52,12 @@
                 zoom: 1 !important;
             }
 
+
             #unam-accessibility-header *, #accessibility-panel *, #open-accessibility-btn * {
                 box-sizing: border-box !important;
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             }
+
 
             /* Garantizar la posición fija permanente de la barra superior */
             #unam-accessibility-header {
@@ -71,10 +78,12 @@
                 border-bottom: 1px solid #1e293b !important;
             }
 
+
             /* Empujar el contenido original hacia abajo */
             body.unam-accessibility-active {
                 padding-top: 48px !important;
             }
+
 
             .unam-hdr-title {
                 display: flex !important;
@@ -84,11 +93,13 @@
                 color: #f1f5f9 !important;
             }
 
+
             .unam-hdr-controls {
                 display: flex !important;
                 align-items: center !important;
                 gap: 8px !important;
             }
+
 
             /* Botones genéricos de la interfaz */
             .unam-btn {
@@ -110,6 +121,7 @@
                 background-color: #334155 !important;
             }
 
+
             .unam-btn-gold {
                 background-color: #f59e0b !important;
                 color: #020617 !important;
@@ -119,6 +131,7 @@
                 background-color: #d97706 !important;
             }
 
+
             .unam-btn-blue {
                 background-color: #1d4ed8 !important;
                 color: #ffffff !important;
@@ -127,6 +140,7 @@
             .unam-btn-blue:hover {
                 background-color: #1e40af !important;
             }
+
 
             .unam-btn-group {
                 display: flex !important;
@@ -149,6 +163,7 @@
                 background-color: #334155 !important;
                 color: #ffffff !important;
             }
+
 
             /* Botón Flotante Inferior */
             #open-accessibility-btn {
@@ -175,6 +190,7 @@
                 background-color: #003569 !important;
             }
 
+
             /* Panel Lateral Deslizante */
             #accessibility-panel {
                 position: fixed !important;
@@ -192,9 +208,11 @@
                 color: #334155 !important;
             }
 
+
             #accessibility-panel.panel-open {
                 transform: translateX(0) !important;
             }
+
 
             .unam-panel-header {
                 background-color: #00468B !important;
@@ -208,12 +226,14 @@
                 z-index: 10 !important;
             }
 
+
             .unam-panel-body {
                 padding: 20px !important;
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 20px !important;
             }
+
 
             .unam-section-title {
                 font-size: 11px !important;
@@ -227,17 +247,20 @@
                 gap: 8px !important;
             }
 
+
             .unam-grid-3 {
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
                 gap: 8px !important;
             }
 
+
             .unam-grid-2 {
                 display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
             }
+
 
             .unam-card-btn {
                 background-color: #f8fafc !important;
@@ -261,6 +284,7 @@
                 color: #1d4ed8 !important;
             }
 
+
             .unam-toggle-btn {
                 width: 100% !important;
                 background-color: #f8fafc !important;
@@ -281,6 +305,7 @@
                 background-color: #f1f5f9 !important;
             }
 
+
             .unam-badge {
                 font-size: 10px !important;
                 padding: 2px 8px !important;
@@ -293,6 +318,7 @@
                 background-color: #10b981 !important;
                 color: #ffffff !important;
             }
+
 
             /* Temas y Filtros Visuales Excluyendo la Interfaz del Widget */
             body.theme-high-contrast *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
@@ -315,15 +341,18 @@
                 filter: invert(100%) hue-rotate(180deg) !important;
             }
 
+
             /* Tipografía para Dislexia en la página */
             .font-dyslexic *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                 font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
             }
 
+
             /* Cursor Gigante */
             .big-cursor, .big-cursor * {
                 cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="%2300468B" stroke="%23ffffff" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>'), auto !important;
             }
+
 
             /* Resaltado de Enlaces */
             .highlight-links a:not(#unam-accessibility-header *):not(#accessibility-panel *) {
@@ -334,6 +363,7 @@
                 border-radius: 4px !important;
                 text-decoration: underline !important;
             }
+
 
             /* Regla de Lectura */
             #reading-ruler {
@@ -348,6 +378,7 @@
                 display: none;
                 transform: translateY(-50%);
             }
+
 
             /* Lupa Virtual */
             #magnifier-glass {
@@ -372,9 +403,11 @@
         document.head.appendChild(style);
     }
 
+
     function injectHTML() {
         const body = document.body;
         body.classList.add('unam-accessibility-active');
+
 
         // Elementos auxiliares (Regla y Lupa)
         const helperElements = `
@@ -382,6 +415,7 @@
             <div id="magnifier-glass"></div>
         `;
         body.insertAdjacentHTML('afterbegin', helperElements);
+
 
         // Barra Superior Fija
         const topHeader = `
@@ -413,12 +447,14 @@
         `;
         body.insertAdjacentHTML('afterbegin', topHeader);
 
+
         // Botón Flotante Inferior Derecho
         const floatingButton = `
             <button id="open-accessibility-btn" type="button" aria-label="Abrir opciones de accesibilidad">
                 <i class="fa-solid fa-universal-access"></i>
             </button>
         `;
+
 
         // Panel Lateral Deslizante
         const lateralPanel = `
@@ -504,9 +540,11 @@
             </div>
         `;
 
+
         body.insertAdjacentHTML('beforeend', floatingButton);
         body.insertAdjacentHTML('beforeend', lateralPanel);
     }
+
 
     function attachEventListeners() {
         const body = document.body;
@@ -514,13 +552,16 @@
         const glass = document.getElementById('magnifier-glass');
         const ruler = document.getElementById('reading-ruler');
 
+
         function togglePanel() {
             if (panel) panel.classList.toggle('panel-open');
         }
 
+
         // FUNCIÓN DE ZOOM ADAPTADA PARA GOOGLE SITES
         function applyFontSize(size) {
             currentFontSize = size;
+
             let fontStyle = document.getElementById('unam-font-size-override');
             if (!fontStyle) {
                 fontStyle = document.createElement('style');
@@ -535,26 +576,21 @@
 
             const factor = currentFontSize / 100;
 
-            // En Google Sites evitamos aplicar 'zoom' a contenedores genéricos (div) 
-            // para evitar el efecto de escalado exponencial anidado.
-            // Se aplica 'zoom' exclusivamente a los nodos contenedores de texto.
+            // Aplica el zoom una sola vez a los contenedores principales.
+            // Evita aplicar zoom a p, span, a, li, etc., porque al estar
+            // anidados dentro de contenedores zoomificados el efecto se
+            // multiplica y deja de ser predecible.
             fontStyle.textContent = `
-                body p:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body span:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body a:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body li:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h1:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h2:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h3:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h4:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h5:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body h6:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body td:not(#unam-accessibility-header *):not(#accessibility-panel *),
-                body th:not(#unam-accessibility-header *):not(#accessibility-panel *) {
+                body > *:not(#unam-accessibility-header)
+                    :not(#accessibility-panel)
+                    :not(#open-accessibility-btn)
+                    :not(#reading-ruler)
+                    :not(#magnifier-glass) {
                     zoom: ${factor} !important;
                 }
             `;
         }
+
 
         function changeFontSize(step) {
             let newSize = currentFontSize + (step * 10);
@@ -562,9 +598,11 @@
             applyFontSize(newSize);
         }
 
+
         function resetFontSize() {
             applyFontSize(100);
         }
+
 
         function updateBadge(id, state) {
             const badge = document.getElementById(id);
@@ -577,11 +615,13 @@
             }
         }
 
+
         function toggleDyslexia() {
             isDyslexicFont = !isDyslexicFont;
             isDyslexicFont ? body.classList.add('font-dyslexic') : body.classList.remove('font-dyslexic');
             updateBadge('badge-dyslexia', isDyslexicFont);
         }
+
 
         function toggleSpacing() {
             isLineSpacing = !isLineSpacing;
@@ -592,147 +632,9 @@
                 document.head.appendChild(spacingStyle);
             }
 
+
             if (isLineSpacing) {
                 spacingStyle.textContent = `
                     body *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *) {
                         line-height: 2 !important;
-                        letter-spacing: 0.08em !important;
-                    }
-                `;
-            } else {
-                spacingStyle.textContent = '';
-            }
-            updateBadge('badge-spacing', isLineSpacing);
-        }
-
-        function setTheme(theme) {
-            body.classList.remove('theme-high-contrast', 'theme-dark', 'theme-grayscale', 'theme-invert');
-            currentTheme = theme;
-            if (theme !== 'default') body.classList.add(`theme-${theme}`);
-        }
-
-        function toggleMagnifier() {
-            isMagnifierActive = !isMagnifierActive;
-            glass.style.display = isMagnifierActive ? 'flex' : 'none';
-            updateBadge('badge-magnifier', isMagnifierActive);
-        }
-
-        function moveMagnifier(e) {
-            if (!isMagnifierActive) return;
-            const x = e.clientX;
-            const y = e.clientY;
-            glass.style.left = (x - glass.offsetWidth / 2) + 'px';
-            glass.style.top = (y - glass.offsetHeight / 2) + 'px';
-
-            const target = document.elementFromPoint(x, y);
-            if (target && target !== glass && !glass.contains(target)) {
-                const text = target.innerText || target.alt || target.ariaLabel || '';
-                if (text) {
-                    glass.innerText = text.substring(0, 90) + (text.length > 90 ? '...' : '');
-                    glass.style.padding = '12px';
-                    glass.style.fontSize = '16px';
-                    glass.style.fontWeight = 'bold';
-                    glass.style.color = '#00468B';
-                }
-            }
-        }
-
-        function toggleRuler() {
-            isRulerActive = !isRulerActive;
-            ruler.style.display = isRulerActive ? 'block' : 'none';
-            updateBadge('badge-ruler', isRulerActive);
-        }
-
-        function moveRuler(e) {
-            if (isRulerActive) ruler.style.top = e.clientY + 'px';
-        }
-
-        function toggleCursor() {
-            isBigCursor = !isBigCursor;
-            isBigCursor ? body.classList.add('big-cursor') : body.classList.remove('big-cursor');
-            updateBadge('badge-cursor', isBigCursor);
-        }
-
-        function toggleLinks() {
-            isLinksHighlighted = !isLinksHighlighted;
-            isLinksHighlighted ? body.classList.add('highlight-links') : body.classList.remove('highlight-links');
-            updateBadge('badge-links', isLinksHighlighted);
-        }
-
-        function readSelectedText() {
-            if (synth && synth.speaking) synth.cancel();
-            let text = window.getSelection().toString().trim();
-            if (!text) text = document.title || "Página actual";
-            if ('speechSynthesis' in window && text) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-MX';
-                synth.speak(utterance);
-            }
-        }
-
-        function stopSpeech() {
-            if (synth && synth.speaking) synth.cancel();
-        }
-
-        function resetAll() {
-            resetFontSize();
-            setTheme('default');
-            stopSpeech();
-            if (isDyslexicFont) toggleDyslexia();
-            if (isLineSpacing) toggleSpacing();
-            if (isMagnifierActive) toggleMagnifier();
-            if (isRulerActive) toggleRuler();
-            if (isBigCursor) toggleCursor();
-            if (isLinksHighlighted) toggleLinks();
-        }
-
-        // Asignación de eventos mouse y botones
-        document.addEventListener('mousemove', moveMagnifier);
-        document.addEventListener('mousemove', moveRuler);
-
-        document.getElementById('open-accessibility-btn').onclick = togglePanel;
-        document.getElementById('btn-close-panel').onclick = togglePanel;
-        document.getElementById('btn-open-panel-top').onclick = togglePanel;
-
-        document.getElementById('btn-font-plus').onclick = () => changeFontSize(1);
-        document.getElementById('panel-font-plus').onclick = () => changeFontSize(1);
-        document.getElementById('btn-font-minus').onclick = () => changeFontSize(-1);
-        document.getElementById('panel-font-minus').onclick = () => changeFontSize(-1);
-        document.getElementById('btn-font-reset').onclick = resetFontSize;
-        document.getElementById('panel-font-reset').onclick = resetFontSize;
-
-        document.getElementById('btn-quick-contrast').onclick = () => setTheme(currentTheme === 'high-contrast' ? 'default' : 'high-contrast');
-        document.getElementById('btn-quick-magnifier').onclick = toggleMagnifier;
-
-        document.getElementById('btn-dyslexia').onclick = toggleDyslexia;
-        document.getElementById('btn-spacing').onclick = toggleSpacing;
-
-        document.getElementById('theme-default').onclick = () => setTheme('default');
-        document.getElementById('theme-high-contrast').onclick = () => setTheme('high-contrast');
-        document.getElementById('theme-dark').onclick = () => setTheme('dark');
-        document.getElementById('theme-grayscale').onclick = () => setTheme('grayscale');
-        document.getElementById('theme-invert').onclick = () => setTheme('invert');
-
-        document.getElementById('btn-magnifier').onclick = toggleMagnifier;
-        document.getElementById('btn-ruler').onclick = toggleRuler;
-        document.getElementById('btn-cursor').onclick = toggleCursor;
-        document.getElementById('btn-links').onclick = toggleLinks;
-
-        document.getElementById('btn-read-text').onclick = readSelectedText;
-        document.getElementById('btn-stop-text').onclick = stopSpeech;
-        document.getElementById('btn-reset-all').onclick = resetAll;
-    }
-
-    function init() {
-        loadDependencies();
-        injectStyles();
-        injectHTML();
-        attachEventListeners();
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-})();
+                        letter-spacing:
