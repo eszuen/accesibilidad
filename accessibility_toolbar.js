@@ -518,7 +518,7 @@
             if (panel) panel.classList.toggle('panel-open');
         }
 
-        // FUNCIÓN DE ZOOM CORREGIDA
+        // FUNCIÓN DE ZOOM ADAPTADA PARA GOOGLE SITES
         function applyFontSize(size) {
             currentFontSize = size;
             let fontStyle = document.getElementById('unam-font-size-override');
@@ -534,9 +534,23 @@
             }
 
             const factor = currentFontSize / 100;
-            // Forzar el redimensionamiento en todos los elementos del sitio excluyendo los controles del Widget
+
+            // En Google Sites evitamos aplicar 'zoom' a contenedores genéricos (div) 
+            // para evitar el efecto de escalado exponencial anidado.
+            // Se aplica 'zoom' exclusivamente a los nodos contenedores de texto.
             fontStyle.textContent = `
-                body *:not(#unam-accessibility-header):not(#unam-accessibility-header *):not(#accessibility-panel):not(#accessibility-panel *):not(#open-accessibility-btn):not(#open-accessibility-btn *):not(#magnifier-glass):not(#reading-ruler) {
+                body p:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body span:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body a:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body li:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h1:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h2:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h3:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h4:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h5:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body h6:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body td:not(#unam-accessibility-header *):not(#accessibility-panel *),
+                body th:not(#unam-accessibility-header *):not(#accessibility-panel *) {
                     zoom: ${factor} !important;
                 }
             `;
